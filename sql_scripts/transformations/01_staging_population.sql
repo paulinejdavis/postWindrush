@@ -1,7 +1,6 @@
 -- Builds cleaned staging_demo from raw ONS census table
 -- Standardises columns names and keep only rows with valid observations
 
-
 CREATE OR REPLACE TABLE `windrush-capstone.windrush_project.staging_demo` AS
 SELECT
   `Age _6 categories_` AS age_group,

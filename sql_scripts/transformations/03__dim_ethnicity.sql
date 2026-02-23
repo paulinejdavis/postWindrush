@@ -1,4 +1,3 @@
-
 -- Creates dim_ethnicity from staging_demo
 -- Generates surrogate key for each ethnicity
 

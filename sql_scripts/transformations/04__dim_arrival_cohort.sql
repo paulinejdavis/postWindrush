@@ -1,4 +1,3 @@
-
 -- Creates dim_arrival_cohort from staging_Demo
 -- One row per distinct year_of_arrival band with a surrogage key
 

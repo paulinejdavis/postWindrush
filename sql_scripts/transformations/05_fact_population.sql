@@ -2,7 +2,6 @@
 -- one row per (age_group, ethnicity_label, year_of_arrival)
 -- USes surrogage key from dimension tables
 
-
 CREATE OR REPLACE TABLE `windrush-capstone.windrush_project.fact_population` AS
 SELECT
   GENERATE_UUID() AS population_id,
