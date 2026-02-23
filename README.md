@@ -3,7 +3,7 @@
 ## Data Model
 
 A star schema was implemented to support cohort-based demographic analysis
-![Windrush Star Schema] (data_modelling/windrush_star_schema.png)
+![Windrush Star Schema] (data_modelling/windrush_star_schema.png) The core warehouse model is a star schema built in Google BigQuery.
 
 ## Data Sources
 
@@ -35,4 +35,30 @@ All datasets were:
 - Uploaded into BigQuery (UK region)
 - Cleaned and standarised prior to modelling
 
-The BigQuery dataset location was set to the UK/EU region to align with data residency best practices
+The BigQuery dataset location was set to the UK/EU region to align with data residency best practices.
+This structure separates descriptive attributes (dimensions) from quantitative measures (fact table) to support scalable aggregation and analysis.
+
+### Fact Table: `fact_population`
+
+**Grain:**
+One row per combination of:
+
+- age_group
+- ethnicity_label
+- arrival_cohort
+
+**Measure:**
+
+- `population_count`
+
+**Foreign Keys:**
+
+- `age_id`
+- `ethnicity_id`
+- `arrival_id`
+
+### Dimensions
+
+- `dim_age` – unique age groups
+- `dim_ethnicity` – unique ethnicity categories
+- `dim_arrival_cohort` – ONS year-of-arrival bands
