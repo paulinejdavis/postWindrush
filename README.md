@@ -62,3 +62,36 @@ One row per combination of:
 - `dim_age` – unique age groups
 - `dim_ethnicity` – unique ethnicity categories
 - `dim_arrival_cohort` – ONS year-of-arrival bands
+
+### Data Cleaning & Transformation
+
+During ingestion and modellingm, the following steps were applied:
+
+- Renamed columns for clarity and consistency
+- Filtered out zero-value observations
+- Cast numeric columns to appropriate data types
+- Generate surrogate keys using GENERATE_UUID()
+- Separated staging tables from dimensional modelling layer
+- Ensured consistent grain in fact table
+
+### Analytical Queries
+
+## Overview
+
+This project includes analytical queries built on the dimensional model to explore demographic patterns within arrival cohorts.
+
+## Techniques used
+
+**Aggregations**
+Used SUM(population_count) with GROUP BY to calculate total population by cohort, ethnicity and age group.
+
+**Dimensional Joins**
+Joined fact_population to dim_cohort, dim_ethnicity and dim_age to enable multi-dimensional analysis.
+
+**Window Functions**
+Applied RANK() OVER (PARTITION BY cohort ORDER BY total_population DESC)to rank ethnic groups within arrival cohorts.
+
+**Top-N Analysis**
+Ordered and filtered results to highlight dominant ethnic groups per cohort.
+
+All analytical queries are located in `sql_scripts/analysis` folder and run against the dimensional model.
