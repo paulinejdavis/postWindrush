@@ -1,5 +1,38 @@
 # postWindrush
 
+## Project Summary
+
+This project analyses Windrush-era population data using ONS Census data (2011 snapshot), landing sample data, and Windrush Compensation Scheme statistics.
+
+The aim is to explore cohort size, demographic characteristics and compensation trends usind a dimensional model in BigQuesty and support dashboard visualisation.
+
+## Key Findings
+
+- Individuals who arrived before 1971 represent **(, 848K)** of the total population in the dataset(approx. 848,609 people).
+
+- As of the latest compensation data, **9,184 claims were approved,** but only **3,604 had resulted in payment**(~39% of approved claims).
+
+- Monthly compensation payment increased over time, rising from ~20-30 per month in 2021 to peaks above 80-100 per month in 2024-2025.
+
+- Approved claims represent just over **1%** of the estimated Windrush-era population in this dataset
+
+## Data Limitations
+
+- ONS data represents a 2011 census snapshot(England & Wales only)
+
+- Compensation data is aggregated monthly and does not contain claimant-level detail
+
+- Landing dataset represents a small sample and is not representative of total migration flows.
+
+- No direct join exists between population and compensation datasets
+
+## Technical Approach
+
+- Star schema: fact_population + dimension tables (arrival cohort, ethnicity, age, etc)
+- Window functions used for monthly compensation calculations
+- Percentage calculations using analytic functions
+- Data cleaned and normalised before ingestion into BigQuery
+
 ## Data Model
 
 A star schema was implemented to support cohort-based demographic analysis
