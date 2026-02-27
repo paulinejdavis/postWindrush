@@ -5,7 +5,7 @@ SELECT
   MAX(month) AS last_month
 FROM `windrush-capstone.windrush_project.staging_compensation`;
 
-
+g
 -- Aggregate Totals: Approved  vs paid + percentage paid 
 SELECT
   SUM(total_final_decisions) AS total_approved,

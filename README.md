@@ -8,13 +8,37 @@ The aim is to explore cohort size, demographic characteristics and compensation 
 
 ## Key Findings
 
-- Individuals who arrived before 1971 represent **(, 848K)** of the total population in the dataset(approx. 848,609 people).
+## Key Findings
 
-- As of the latest compensation data, **9,184 claims were approved,** but only **3,604 had resulted in payment**(~39% of approved claims).
+### 1. Pre-1971 Arrivals Represent a Significant Share of the Population
 
-- Monthly compensation payment increased over time, rising from ~20-30 per month in 2021 to peaks above 80-100 per month in 2024-2025.
+Individuals who arrived before 1971 account for approximately **848,609 people**, representing a substantial proportion of the dataset.
 
-- Approved claims represent just over **1%** of the estimated Windrush-era population in this dataset
+- SQL file: `sql_scripts/analysis/06_cohort_size_and_percentage_of_total.sql`
+
+---
+
+### 2. Compensation Payments vs Approved Claims
+
+As of the latest data, **9,184 claims were approved**, but only **3,604 resulted in payment** (~39% of approved claims).
+
+- SQL file: `sql_scripts/compensation/04_total_approved_total_paid_percentage_paid.sql`
+
+---
+
+### 3. Monthly Compensation Trends
+
+Monthly payments increased over time, rising from ~20–30 per month in 2021 to peaks above 80–100 per month in 2024–2025.
+
+- SQL file: `sql_scripts/compensation/06_monthly_paid_increment.sql`
+
+---
+
+### 4. Approved Claims Relative to Estimated Population
+
+Approved claims represent just over **1%** of the estimated Windrush-era population in this dataset.
+
+- SQL file: `sql_scripts/analysis/07_arrival_period_size_and_percentage_of_total.sql`
 
 ## Data Limitations
 
@@ -128,3 +152,47 @@ Applied RANK() OVER (PARTITION BY cohort ORDER BY total_population DESC)to rank 
 Ordered and filtered results to highlight dominant ethnic groups per cohort.
 
 All analytical queries are located in `sql_scripts/analysis` folder and run against the dimensional model.
+
+## How to run this project
+
+## 1. Data Sources
+
+Download the following datasets (/data_sources):
+
+- ONS Census 20211 (custom dataset created via ONS dataset builder)
+  https://www.ons.gov.uk/filters/b39c683e-d158-4d09-bc54-14bf40bd0316/dimensions \***_check correct link_**
+
+- Windrush Compensation Scheme monthly statistics
+  https://www.gov.uk/government/statistics/windrush-compensation-scheme-data-september-2025
+
+- National Archives
+  https://www.nationalarchives.gov.uk/education/resources/commonwealth-migration-since-1945/passenger-list-from-windrush/
+
+## 2. Run SQL Scripts in order
+
+Execute scripts in the following order:
+
+1. sql_scripts/transformations/
+
+- Create staging tables
+- Create dimension tables
+- Create fact table
+
+2. sql_scripts/analysis/
+
+- Cohort distribution
+- Age breakdown
+- Compensation summary
+- Window function (monthly payments)
+
+4. Dashboard (pdate)
+
+- Connect Power BI to BigQuery dataset
+- Use fact table and staging tables??
+- Apply slicers and cross-filtering
+
+### Important to note
+
+- ONS dataset limited to England & Wales (2011 snapshot)
+- Compensation data is aggregated monthly(no claimant level detail)
+- No direct join exists between population and compensation datasets
