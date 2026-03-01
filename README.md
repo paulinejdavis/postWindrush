@@ -1,198 +1,259 @@
-# postWindrush
+# Windrush Cohort & Compensation Analysis
 
-## Project Summary
-
-This project analyses Windrush-era population data using ONS Census data (2011 snapshot), landing sample data, and Windrush Compensation Scheme statistics.
-
-The aim is to explore cohort size, demographic characteristics and compensation trends usind a dimensional model in BigQuesty and support dashboard visualisation.
-
-## Key Findings
-
-## Key Findings
-
-### 1. Pre-1971 Arrivals Represent a Significant Share of the Population
-
-Individuals who arrived before 1971 account for approximately **848,609 people**, representing a substantial proportion of the dataset.
-
-- SQL file: `sql_scripts/analysis/06_cohort_size_and_percentage_of_total.sql`
+_A Public Sector Data Analytics Pipeline (BigQuery + Star Schema)_
 
 ---
 
-### 2. Compensation Payments vs Approved Claims
+## Dashboard Preview
 
-As of the latest data, **9,184 claims were approved**, but only **3,604 resulted in payment** (~39% of approved claims).
-
-- SQL file: `sql_scripts/compensation/04_total_approved_total_paid_percentage_paid.sql`
-
----
-
-### 3. Monthly Compensation Trends
-
-Monthly payments increased over time, rising from ~20–30 per month in 2021 to peaks above 80–100 per month in 2024–2025.
-
-- SQL file: `sql_scripts/compensation/06_monthly_paid_increment.sql`
+<img src="dashboard/summary.png" width="200">
+<img src="dashboard/analysis.jpg" width="200">
 
 ---
 
-### 4. Approved Claims Relative to Estimated Population
+## Download Power BI /File
 
-Approved claims represent just over **1%** of the estimated Windrush-era population in this dataset.
+Upload the interactive dashboard locally:
+[Download the .pbix file](dashboard/post_windrush.pbix)
 
-- SQL file: `sql_scripts/analysis/07_arrival_period_size_and_percentage_of_total.sql`
+---
 
-## Data Limitations
+## Project Presentation
 
-- ONS data represents a 2011 census snapshot(England & Wales only)
+- 🎥 **Slide Deck:** [View on Google Slides](Phttps://docs.google.com/presentation/d/1Wj0wQumH4pFNqweHjxNGePFbKdKUZNWPBXM5Sk4jzmw/edit?usp=sharing)
 
-- Compensation data is aggregated monthly and does not contain claimant-level detail
+## Project Overview
 
-- Landing dataset represents a small sample and is not representative of total migration flows.
+This project transforms raw public datasets into a structured analytics warehouse to examine:
 
-- No direct join exists between population and compensation datasets
+- Windrush-era population cohorts (ONS Census snapshot)
+- Compensation scheme outcomes
+- Demographic distribution across arrival cohorts
 
-## Technical Approach
+The objective is to compare estimated cohort size against approved and paid claims, analyse how compensation activity has evolved over time, and highlight gaps between policy intent and observed outcomes.
 
-- Star schema: fact_population + dimension tables (arrival cohort, ethnicity, age, etc)
-- Window functions used for monthly compensation calculations
-- Percentage calculations using analytic functions
-- Data cleaned and normalised before ingestion into BigQuery
+The solution demonstrates dimensional modelling, advanced SQL, and responsible handling of public demographic data.
 
-## Data Model
+---
 
-A star schema was implemented to support cohort-based demographic analysis
-![Windrush Star Schema] (data_modelling/windrush_star_schema.png) The core warehouse model is a star schema built in Google BigQuery.
+## Visual Design
+
+Colour choices were intentionally selected to reflect the Caribbean heritage of the Windrush generation, while mainitaining sufficient contrast for readability and accessibility.
+
+---
+
+## Research Question
+
+How do compensation outcomes compare to the estimated Windrush-era population, and what trends are visible over time?
+
+---
+
+## Tech Stack
+
+- Google BigQuery (UK region)
+- SQL (CTEs, Window Functions, Aggregations)
+- Power BI
+- Git + VSCode
+
+---
+
+## Repository Structure
+
+```text
+├── README.md
+├── data_modelling/
+│   └── windrush_star_schema.png
+├── sql_scripts/
+│   ├── transformations/
+│   ├── analysis/
+│   └── compensation/
+├── dashboard/
+│   ├── summary.png
+│   └── analysis.png
+└── .gitignore
+```
+
+- `transformations/` → staging, dimension, and fact table creation
+- `analysis/` → demographic and cohort analysis queries
+- `compensation/` → compensation trend analysis
+
+---
 
 ## Data Sources
 
-### 1. ONS Census 2021 (Custom Dataset Builder)
+- ONS Census (England & Wales, 2011 snapshot)
+- GOV.UK Windrush Compensation Scheme monthly statistics
+- National Archives digitised landing record sample (contextual reference)
 
-Population data was sourced from the Office for National Statistics (ONS) Census 2021 custom dataset builder.
-Variables selected included:
+### Data Limitations
 
-- Age group
-- Ethnic Group
-- Economic activity status
-- Year of arrival
+- Census data represents a historical snapshot
+- Compensation data is aggregated monthly (no claimant-level detail)
+- No direct join exists between population and compensation datasets
+- Landing records are not statistically representative
 
-Data was exported as CSV files and ingested into Google BigQuery for transformation and modelling.
+This analysis is observational and contextual, not causal.
 
-### 2. Goldsmith Windrush Landing Cards (Digitised Records)
+---
 
-Landing records were sourced from the Goldsmiths University digitised archive of Windrush-era arrial data. This dataset was used to visualise arrival trends and support cohort classification.
+## Data Model
 
-### 3. Windrush Compensation Data
+A star schema was implemented in BigQuery to support scalable aggregation and dashboard performance.
 
-Public compensation statistics were used to provide contextual insight into policy impact and timeline relevance.
+### Fact Table — `fact_population`
 
-### Data Ingestion
-
-All datasets were:
-
-- Downloaded locally as CSV files
-- Uploaded into BigQuery (UK region)
-- Cleaned and standarised prior to modelling
-
-The BigQuery dataset location was set to the UK/EU region to align with data residency best practices.
-This structure separates descriptive attributes (dimensions) from quantitative measures (fact table) to support scalable aggregation and analysis.
-
-### Fact Table: `fact_population`
-
-**Grain:**
-One row per combination of:
+**Grain:** One row per combination of:
 
 - age_group
-- ethnicity_label
+- ethnicity
 - arrival_cohort
 
 **Measure:**
 
 - `population_count`
 
-**Foreign Keys:**
+### Dimension Tables
 
-- `age_id`
-- `ethnicity_id`
-- `arrival_id`
+- `dim_age`
+- `dim_ethnicity`
+- `dim_arrival_cohort`
 
-### Dimensions
+### Design Decisions
 
-- `dim_age` – unique age groups
-- `dim_ethnicity` – unique ethnicity categories
-- `dim_arrival_cohort` – ONS year-of-arrival bands
+- Surrogate keys generated using `GENERATE_UUID()`
+- Strict grain enforcement to prevent double counting
+- Separation between staging and dimensional layers
+- BigQuery dataset configured in UK region
 
-### Data Cleaning & Transformation
+The dimensional structure enables scalable aggregation while preserving analytical flexibility for cohort-based comparisons and trend analysis.
 
-During ingestion and modellingm, the following steps were applied:
+---
 
-- Renamed columns for clarity and consistency
-- Filtered out zero-value observations
-- Cast numeric columns to appropriate data types
-- Generate surrogate keys using GENERATE_UUID()
-- Separated staging tables from dimensional modelling layer
-- Ensured consistent grain in fact table
+## Data Transformation
 
-### Analytical Queries
+Raw datasets were first loaded into staging tables in BigQuery before being modelled into a star schema.
 
-## Overview
+Transformation steps included:
 
-This project includes analytical queries built on the dimensional model to explore demographic patterns within arrival cohorts.
+- Standardising column names and data types
+- Removing zero-value and incomplete records
+- Normalising categorical fields (age bands, ethnicity, arrival cohorts)
+- Generating surrogate keys using `GENERATE_UUID()`
+- Enforcing consistent fact table grain
 
-## Techniques used
+Staging and dimensional layers were separated to maintain clarity and reproducibility.
 
-**Aggregations**
-Used SUM(population_count) with GROUP BY to calculate total population by cohort, ethnicity and age group.
+---
 
-**Dimensional Joins**
-Joined fact_population to dim_cohort, dim_ethnicity and dim_age to enable multi-dimensional analysis.
+## Key Insights
 
-**Window Functions**
-Applied RANK() OVER (PARTITION BY cohort ORDER BY total_population DESC)to rank ethnic groups within arrival cohorts.
+The following findings were derived from the dimensional model and validated through reproducible SQL queries.
 
-**Top-N Analysis**
-Ordered and filtered results to highlight dominant ethnic groups per cohort.
+### 1. Compensation Conversion Rate
 
-All analytical queries are located in `sql_scripts/analysis` folder and run against the dimensional model.
+- 9,184 claims approved
+- 3,604 payments issued
+- ~39% conversion rate
 
-## How to run this project
+Query:  
+`sql_scripts/compensation/04_total_approved_total_paid_percentage_paid.sql`
 
-## 1. Data Sources
+---
 
-Download the following datasets (/data_sources):
+### 2. Monthly Payment Trend
 
-- ONS Census 20211 (custom dataset created via ONS dataset builder)
-  https://www.ons.gov.uk/filters/b39c683e-d158-4d09-bc54-14bf40bd0316/dimensions \***_check correct link_**
+Payments increased from ~20–30 per month (2021) to peaks above 80–100 per month (2024–2025).
 
-- Windrush Compensation Scheme monthly statistics
-  https://www.gov.uk/government/statistics/windrush-compensation-scheme-data-september-2025
+Query:  
+`sql_scripts/compensation/06_monthly_paid_increment.sql`
 
-- National Archives
-  https://www.nationalarchives.gov.uk/education/resources/commonwealth-migration-since-1945/passenger-list-from-windrush/
+---
 
-## 2. Run SQL Scripts in order
+### 3. Claims vs Estimated Cohort Size
 
-Execute scripts in the following order:
+Approved claims represent just over ~1% of the estimated Windrush-era population.
 
-1. sql_scripts/transformations/
+Query:  
+`sql_scripts/analysis/07_arrival_period_size_and_percentage_of_total.sql`
 
-- Create staging tables
-- Create dimension tables
-- Create fact table
+---
 
-2. sql_scripts/analysis/
+## SQL Techniques Demonstrated
 
-- Cohort distribution
-- Age breakdown
-- Compensation summary
-- Window function (monthly payments)
+- CTEs for modular transformations
+- Controlled aggregation across defined grain
+- Window functions for ranking and monthly trend analysis
+- Dimensional joins across fact and dimension tables
 
-4. Dashboard (pdate)
+All analytical queries are organised under:
 
-- Connect Power BI to BigQuery dataset
-- Use fact table and staging tables??
-- Apply slicers and cross-filtering
+- `sql_scripts/analysis/`
+- `sql_scripts/compensation/`
 
-### Important to note
+---
 
-- ONS dataset limited to England & Wales (2011 snapshot)
-- Compensation data is aggregated monthly(no claimant level detail)
-- No direct join exists between population and compensation datasets
+## How to Run
+
+### 1. Create BigQuery Dataset
+
+- Set dataset location to **UK region**
+- Upload raw CSV files into staging tables
+
+### 2. Run Transformations
+
+Execute:
+
+`sql_scripts/transformations/`
+
+This creates staging tables, dimension tables, and the fact table.
+
+### 3. Run Analytical Queries
+
+Execute:
+
+- `sql_scripts/analysis/`
+- `sql_scripts/compensation/`
+
+### 4. Connect Dashboard
+
+- Connect Power BI to BigQuery
+- Build visuals from modelled tables
+- Apply slicers for Age Bracket and Month
+
+Dashboard flow:
+
+**Summary → Trends → Context**
+
+---
+
+## Data Ethics Considerations
+
+This project uses publicly available datasets and contains no personally identifiable information.
+
+The Goldsmiths digitised landing records were used for contextual reference only. Due to licensing constraints, the dataset was not redistributed or structurally transformed within the warehouse model. Modelling decisions were adjusted to remain compliant with usage restrictions.
+
+Compensation data is analysed at aggregate level only.
+
+When analysing demographic disparities:
+
+- Findings are presented with context
+- Dataset limitations are clearly stated
+- Aggregated statistics are interpreted cautiously
+
+Public sector analysis requires careful communication to avoid misrepresentation of demographic patterns or policy impact.
+
+---
+
+## Public Service Implication
+
+The analysis highlights the scale difference between the estimated Windrush-era population and approved compensation claims.
+
+While this project does not assess causality, it provides a structured analytical foundation for further investigation into access, awareness, and administrative processing within the compensation scheme.
+
+---
+
+## Source Links
+
+- ONS Census Dataset Builder: https://www.ons.gov.uk/filters/b39c683e-d158-4d09-bc54-14bf40bd0316/dimensions
+- Windrush Compensation Statistics: https://www.gov.uk/government/statistics/windrush-compensation-scheme-data-september-2025
+- National Archives Passenger Records: https://www.nationalarchives.gov.uk/education/resources/commonwealth-migration-since-1945/passenger-list-from-windrush/
