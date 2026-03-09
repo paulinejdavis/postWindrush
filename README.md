@@ -20,7 +20,7 @@ Upload the interactive dashboard locally:
 
 ## Project Presentation
 
-- 🎥 **Slide Deck:** [View on Google Slides](Phttps://docs.google.com/presentation/d/1Wj0wQumH4pFNqweHjxNGePFbKdKUZNWPBXM5Sk4jzmw/edit?usp=sharing)
+- 🎥 **Slide Deck:** [View on Google Slides](https://docs.google.com/presentation/d/1Wj0wQumH4pFNqweHjxNGePFbKdKUZNWPBXM5Sk4jzmw/edit?usp=sharing)
 
 ## Project Overview
 
